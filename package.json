@@ -8,6 +8,9 @@
     "start": "node src/index.js",
     "dev": "nodemon src/index.js"
   },
+  "engines": {
+    "node": ">=18 <23"
+  },
   "keywords": ["car", "rental", "backend"],
   "author": "",
   "license": "MIT",
