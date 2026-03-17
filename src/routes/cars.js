@@ -93,4 +93,61 @@ router.delete("/:id", requireAuth, async (req, res) => {
   res.status(204).end();
 });
 
+// GET /cars/search
+router.get("/search", async (req, res) => {
+  const { Car } = getModels(req);
+  const { q, make, model, year, available } = req.query;
+  const { page, pageSize, offset, limit } = parsePagination(req.query);
+
+  const filter = {};
+  if (make) filter.make = { [isSequelizeModel(Car) ? '$like' : '$regex']: `%${make}%`, [isSequelizeModel(Car) ? '$iLike' : '$options']: 'i' };
+  if (model) filter.model = { [isSequelizeModel(Car) ? '$like' : '$regex']: `%${model}%`, [isSequelizeModel(Car) ? '$iLike' : '$options']: 'i' };
+  if (year) filter.year = parseInt(year);
+  if (available !== undefined) filter.available = available === "true";
+
+  if (q) {
+    const searchRegex = { [isSequelizeModel(Car) ? '$like' : '$regex']: `%${q}%`, [isSequelizeModel(Car) ? '$iLike' : '$options']: 'i' };
+    filter.$or = [
+      { make: searchRegex },
+      { model: searchRegex },
+      { licensePlate: searchRegex }
+    ];
+  }
+
+  if (isSequelizeModel(Car)) {
+    const result = await Car.findAndCountAll({ where: filter, offset, limit });
+    return res.json(buildResponsePage(result.rows, result.count, page, pageSize));
+  }
+
+  if (isMongooseModel(Car)) {
+    const [data, count] = await Promise.all([
+      Car.find(filter).skip(offset).limit(limit).lean(),
+      Car.countDocuments(filter),
+    ]);
+
+    return res.json(buildResponsePage(data, count, page, pageSize));
+  }
+
+  res.status(500).json({ error: "Database driver not supported" });
+});
+
+// PUT /cars/:id/availability
+router.put("/:id/availability", requireAuth, async (req, res) => {
+  const { Car } = getModels(req);
+  const id = req.params.id;
+  const { available } = req.body;
+
+  if (typeof available !== "boolean") {
+    return res.status(400).json({ error: "available must be a boolean" });
+  }
+
+  const car = isSequelizeModel(Car) ? await Car.findByPk(id) : await Car.findById(id);
+  if (!car) return res.status(404).json({ error: "Car not found" });
+
+  await car.update ? car.update({ available }) : car.set({ available });
+  await car.save?.();
+
+  res.json(toJson(car));
+});
+
 export default router;
