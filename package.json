@@ -21,7 +21,7 @@
     "pg": "^8.11.1",
     "pg-hstore": "^2.3.4",
     "sequelize": "^6.33.0",
-    "sqlite3": "^5.2.8",
+    "sqlite3": "^5.1.6",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^4.6.3",
     "zod": "^3.22.2"
