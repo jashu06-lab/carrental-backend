@@ -36,6 +36,10 @@ const swaggerSpec = swaggerJSDoc({
 
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
+app.get("/", (req, res) => {
+  res.redirect("/docs");
+});
+
 app.get("/health", (req, res) => {
   res.json({ status: "ok" });
 });
