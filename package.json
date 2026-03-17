@@ -1,0 +1,32 @@
+{
+  "name": "carrental-backend",
+  "version": "1.0.0",
+  "description": "A simple car rental management backend",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js"
+  },
+  "keywords": ["car", "rental", "backend"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.4",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^7.6.0",
+    "pg": "^8.11.1",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.33.0",
+    "sqlite3": "^5.2.8",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^4.6.3",
+    "zod": "^3.22.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}
