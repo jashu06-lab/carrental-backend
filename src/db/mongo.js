@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { hashPassword } from "../utils/hash.js";
 
 const customerSchema = new mongoose.Schema(
   {
@@ -44,6 +45,24 @@ export async function initMongo(mongoUri = "mongodb://localhost:27017/carrental"
   const Customer = conn.model("Customer", customerSchema);
   const Car = conn.model("Car", carSchema);
   const Rental = conn.model("Rental", rentalSchema);
+
+  // Seed initial data for demo
+  const carCount = await Car.countDocuments();
+  if (carCount === 0) {
+    await Car.insertMany([
+      { make: "Toyota", model: "Camry", year: 2020, dailyRate: 50.00, licensePlate: "ABC123", available: true },
+      { make: "Honda", model: "Civic", year: 2019, dailyRate: 45.00, licensePlate: "DEF456", available: true },
+      { make: "Ford", model: "Focus", year: 2021, dailyRate: 40.00, licensePlate: "GHI789", available: false },
+    ]);
+  }
+
+  const customerCount = await Customer.countDocuments();
+  if (customerCount === 0) {
+    await Customer.insertMany([
+      { firstName: "John", lastName: "Doe", email: "john@example.com", phone: "123-456-7890", passwordHash: hashPassword("password") },
+      { firstName: "Jane", lastName: "Smith", email: "jane@example.com", phone: "098-765-4321", passwordHash: hashPassword("password") },
+    ]);
+  }
 
   return { mongoose: conn, models: { Customer, Car, Rental } };
 }
